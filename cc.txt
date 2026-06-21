@@ -1,0 +1,173 @@
+-- Hieu Hub - Premium Movable Menu
+-- Square-shaped dark menu with modern smooth drag & auto-lock positioning system[span_0](start_span)[span_0](end_span)
+
+local ScreenGui = Instance.new("ScreenGui")
+local MainMenu = Instance.new("Frame")
+local Title = Instance.new("TextLabel")
+local ContentFrame = Instance.new("Frame")
+local UIListLayout = Instance.new("UIListLayout")
+
+-- GUI Core Setup
+ScreenGui.Name = "HieuHubMenu"
+ScreenGui.Parent = game:GetService("CoreGui") or game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")[span_1](start_span)[span_1](end_span)
+ScreenGui.ResetOnSpawn = false[span_2](start_span)[span_2](end_span)
+
+-- Main Dark Square Menu Frame Setup
+MainMenu.Name = "MainMenu"
+MainMenu.Parent = ScreenGui
+MainMenu.BackgroundColor3 = Color3.fromRGB(20, 20, 20) -- Dark black theme[span_3](start_span)[span_3](end_span)
+MainMenu.BorderSizePixel = 2[span_4](start_span)[span_4](end_span)
+MainMenu.BorderColor3 = Color3.fromRGB(60, 60, 60) -- Dark gray border outline[span_5](start_span)[span_5](end_span)
+MainMenu.Position = UDim2.new(0.4, 0, 0.3, 0)[span_6](start_span)[span_6](end_span)
+MainMenu.Size = UDim2.new(0, 250, 0, 250) -- Perfectly square geometry[span_7](start_span)[span_7](end_span)
+MainMenu.Active = true[span_8](start_span)[span_8](end_span)
+
+-- Menu Title Header
+Title.Name = "Title"
+Title.Parent = MainMenu
+Title.BackgroundColor3 = Color3.fromRGB(15, 15, 15)[span_9](start_span)[span_9](end_span)
+Title.Size = UDim2.new(1, 0, 0, 35)[span_10](start_span)[span_10](end_span)
+Title.Font = Enum.Font.SourceSansBold[span_11](start_span)[span_11](end_span)
+Title.Text = "HIEU HUB[span_12](start_span)"[span_12](end_span)
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)[span_13](start_span)[span_13](end_span)
+Title.TextSize = 18[span_14](start_span)[span_14](end_span)
+
+-- Content Container Frame
+ContentFrame.Name = "ContentFrame"
+ContentFrame.Parent = MainMenu
+ContentFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)[span_15](start_span)[span_15](end_span)
+ContentFrame.Position = UDim2.new(0, 10, 0, 45)[span_16](start_span)[span_16](end_span)
+ContentFrame.Size = UDim2.new(1, -20, 1, -55)[span_17](start_span)[span_17](end_span)
+ContentFrame.BackgroundTransparency = 1
+
+UIListLayout.Parent = ContentFrame
+UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder[span_18](start_span)[span_18](end_span)
+UIListLayout.Padding = UDim.new(0, 12)
+
+-- Helper Function to Create Styled Buttons
+local function createButton(name, text, order)
+    local btn = Instance.new("TextButton")
+    btn.Name = name
+    btn.Parent = ContentFrame
+    btn.Size = UDim2.new(1, 0, 0, 40)
+    btn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    btn.Font = Enum.Font.SourceSansSemibold[span_19](start_span)[span_19](end_span)
+    btn.Text = text
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)[span_20](start_span)[span_20](end_span)
+    btn.TextSize = 14[span_21](start_span)[span_21](end_span)
+    btn.BorderSizePixel = 1[span_22](start_span)[span_22](end_span)
+    btn.BorderColor3 = Color3.fromRGB(55, 55, 55)
+    btn.LayoutOrder = order[span_23](start_span)[span_23](end_span)
+    return btn
+end
+
+local offsetComActive = false[span_24](start_span)[span_24](end_span)
+local wallGlitchActive = false[span_25](start_span)[span_25](end_span)
+
+-- Create Buttons with English Labels
+local OffsetButton = createButton("OffsetBtn", "Offset Com: OFF", 1)[span_26](start_span)[span_26](end_span)
+local WallGlitchButton = createButton("WallGlitchBtn", "Wall Glitch: OFF", 2)[span_27](start_span)[span_27](end_span)
+local FlingButton = createButton("FlingBtn", "Execute Fling Script", 3)
+
+-- =======================================================
+-- MODERN DRAG SYSTEM WITH POSITION LOCK ON RELEASE
+-- =======================================================
+local UserInputService = game:GetService("UserInputService")[span_28](start_span)[span_28](end_span)
+local dragging, dragInput, dragStart, startPos[span_29](start_span)[span_29](end_span)
+
+local function update(input)
+    local delta = input.Position - dragStart[span_30](start_span)[span_30](end_span)
+    MainMenu.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)[span_31](start_span)[span_31](end_span)
+end
+
+MainMenu.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then[span_32](start_span)[span_32](end_span)
+        dragging = true[span_33](start_span)[span_33](end_span)
+        dragStart = input.Position[span_34](start_span)[span_34](end_span)
+        startPos = MainMenu.Position[span_35](start_span)[span_35](end_span)
+        
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false -- Securely locks the menu at its current spot when released[span_36](start_span)[span_36](end_span)
+            end
+        end)
+    end
+end)
+
+MainMenu.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then[span_37](start_span)[span_37](end_span)
+        dragInput = input[span_38](start_span)[span_38](end_span)
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then[span_39](start_span)[span_39](end_span)
+        update(input)[span_40](start_span)[span_40](end_span)
+    end
+end)
+
+
+-- =======================================================
+-- FEATURES LOGIC HANDLERS
+-- =======================================================
+local lp = game:GetService("Players").LocalPlayer[span_41](start_span)[span_41](end_span)
+
+-- 1. Offset Com ON/OFF Handler (Used for Speed Glitch)
+OffsetButton.MouseButton1Click:Connect(function()[span_42](start_span)[span_42](end_span)
+    offsetComActive = not offsetComActive[span_43](start_span)[span_43](end_span)
+    if offsetComActive then
+        OffsetButton.Text = "Offset Com: ON"
+        OffsetButton.BackgroundColor3 = Color3.fromRGB(45, 90, 45) -- Green when active
+        
+        -- Loop to patch CFrame based on movement vector for Speed Glitch
+        _G.OffsetLoop = game:GetService("RunService").Heartbeat:Connect(function()[span_44](start_span)[span_44](end_span)
+            if lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then[span_45](start_span)[span_45](end_span)
+                local hrp = lp.Character.HumanoidRootPart[span_46](start_span)[span_46](end_span)
+                if lp.Character.Humanoid.MoveDirection.Magnitude > 0 then[span_47](start_span)[span_47](end_span)
+                    hrp.CFrame = hrp.CFrame + (lp.Character.Humanoid.MoveDirection * 0.45)
+                end
+            end
+        end)
+    else
+        OffsetButton.Text = "Offset Com: OFF[span_48](start_span)"[span_48](end_span)
+        OffsetButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+        if _G.OffsetLoop then[span_49](start_span)[span_49](end_span)
+            _G.OffsetLoop:Disconnect()[span_50](start_span)[span_50](end_span)
+            _G.OffsetLoop = nil[span_51](start_span)[span_51](end_span)
+        end
+    end
+end)
+
+-- 2. Wall Glitch ON/OFF Handler (Phasing through objects)
+WallGlitchButton.MouseButton1Click:Connect(function()[span_52](start_span)[span_52](end_span)
+    wallGlitchActive = not wallGlitchActive[span_53](start_span)[span_53](end_span)
+    if wallGlitchActive then
+        WallGlitchButton.Text = "Wall Glitch: ON"
+        WallGlitchButton.BackgroundColor3 = Color3.fromRGB(45, 90, 45) -- Green when active
+        
+        -- Keeps CanCollide disabled to glitch through obstacles/walls
+        _G.WallGlitchLoop = game:GetService("RunService").Stepped:Connect(function()[span_54](start_span)[span_54](end_span)
+            if lp.Character then[span_55](start_span)[span_55](end_span)
+                for _, part in pairs(lp.Character:GetDescendants()) do[span_56](start_span)[span_56](end_span)
+                    if part:IsA("BasePart") and part.CanCollide == true then[span_57](start_span)[span_57](end_span)
+                        part.CanCollide = false
+                    end
+                end
+            end
+        end)
+    else
+        WallGlitchButton.Text = "Wall Glitch: OFF[span_58](start_span)"[span_58](end_span)
+        WallGlitchButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+        if _G.WallGlitchLoop then[span_59](start_span)[span_59](end_span)
+            _G.WallGlitchLoop:Disconnect()[span_60](start_span)[span_60](end_span)
+            _G.WallGlitchLoop = nil[span_61](start_span)[span_61](end_span)
+        end
+    end
+end)
+
+-- 3. Universal Fling Script Activation Button
+FlingButton.MouseButton1Click:Connect(function()[span_62](start_span)[span_62](end_span)
+    -- Executes the requested external loadstring directly
+    loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-FE-Fling-Yourself-GUI-151210"))()[span_63](start_span)[span_63](end_span)
+end)
+  
